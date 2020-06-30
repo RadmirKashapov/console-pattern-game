@@ -1,0 +1,36 @@
+{
+  "min value of money": 100,
+  "UNITS" {
+    "ARCHER": {
+      "Cost": 120,
+      "Hp": 80,
+      "Ad": 100,
+      "Df": 90
+    },
+    "HEALER": {
+      "Cost": 200,
+      "Hp": 70,
+      "Ad": 30,
+      "Df": 30
+    },
+    "INFANTRY": {
+      "Cost": 100,
+      "Hp": 70,
+      "Ad": 50,
+      "Df": 50
+    },
+    "KNIGHT": {
+      "Cost": 300,
+      "Hp": 100,
+      "Ad": 80,
+      "Df": 50
+    },
+    "WIZARD": {
+      "Cost": 250,
+      "Hp": 70,
+      "Ad": 40,
+      "Df": 50
+    }
+  }
+
+}
