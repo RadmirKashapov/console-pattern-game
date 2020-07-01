@@ -27,7 +27,9 @@ namespace ConsoleGame.Army.Units.Impl
             this.Hp = healer.Hp;
             this.Ad = healer.Ad;
             this.Df = healer.Df;
+            this.SpecialActionStrength = healer.SpecialActionStrength;
         }
+
         public object Clone()
         {
             return new Healer(this);

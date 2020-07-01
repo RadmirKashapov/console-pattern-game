@@ -17,7 +17,7 @@ namespace ConsoleGame.Army.Units
 
             if (unit.Df > Ad) 
             {
-                unit.Df = unit.Df - Ad;
+                unit.Df -= Ad;
                 if (unit.Df < 0)
                     unit.Df = 0;
 

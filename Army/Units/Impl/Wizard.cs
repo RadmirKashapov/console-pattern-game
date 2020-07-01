@@ -13,12 +13,13 @@ namespace ConsoleGame.Army.Units.Impl
         public int Df { get; set; }
         public int SpecialActionStrength { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public Wizard(int cost, int hp, int ad, int df)
+        public Wizard(int cost, int hp, int ad, int df, int specialActionStrength)
         {
             this.Cost = cost;
             this.Hp = hp;
             this.Ad = ad;
             this.Df = df;
+            this.SpecialActionStrength = specialActionStrength;
         }
         public Wizard(Wizard wizard)
         {
@@ -26,6 +27,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.Hp = wizard.Hp;
             this.Ad = wizard.Ad;
             this.Df = wizard.Df;
+            this.SpecialActionStrength = wizard.SpecialActionStrength;
         }
         public object Clone()
         {
