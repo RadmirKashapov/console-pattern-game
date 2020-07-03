@@ -6,6 +6,6 @@ namespace ConsoleGame.Army.Units
 {
     public interface IArmy
     {
-        List<IUnit> CreateArmy(IUnitFactory factory);
+        void CreateArmy();
     }
 }

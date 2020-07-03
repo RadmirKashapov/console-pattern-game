@@ -7,19 +7,23 @@ namespace ConsoleGame.Army.Units.Impl
 {
     class Healer : IUnit, ICloneable, ISpecialAction
     {
-        public int Cost { get; }
+        public int Cost { get; set; }
         public int Hp { get; set; }
         public int Ad { get; set; }
         public int Df { get; set; }
         public int SpecialActionStrength { get; set; }
+        public int Range { get; set; }
+        public string Name { get; set; }
 
-        public Healer(int cost, int hp, int ad, int df, int specialActionStrength)
+        public Healer(int cost, int hp, int ad, int df, int specialActionStrength, int range)
         {
             this.Cost = cost;
             this.Hp = hp;
             this.Ad = ad;
             this.Df = df;
             this.SpecialActionStrength = specialActionStrength;
+            this.Range = range;
+            this.Name = Defaults.Healer.name;
         }
         public Healer(Healer healer)
         {
@@ -28,6 +32,8 @@ namespace ConsoleGame.Army.Units.Impl
             this.Ad = healer.Ad;
             this.Df = healer.Df;
             this.SpecialActionStrength = healer.SpecialActionStrength;
+            this.Range = healer.Range;
+            this.Name = healer.Name;
         }
 
         public object Clone()
@@ -35,7 +41,7 @@ namespace ConsoleGame.Army.Units.Impl
             return new Healer(this);
         }
 
-        public void Heal(IUnit unit)
+        private void Heal(IUnit unit)
         {
 
             Random rnd = new Random();
@@ -45,6 +51,9 @@ namespace ConsoleGame.Army.Units.Impl
             if (magic == 1 || magic == 2)
             {
                 unit.Hp = heal;
+
+                if (unit.Hp > 100)
+                    unit.Hp = 100;
             }
         }
 

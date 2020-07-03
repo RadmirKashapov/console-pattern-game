@@ -1,43 +1,74 @@
-﻿using System;
+﻿using ConsoleGame.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace ConsoleGame.Army.Units.Impl
 {
-    enum UnitType
-    {
-        INFANTRY, KNIGHT, HEALER, ARCHER, WIZARD
-    }
-    class UnitFactory: IUnitFactory
+    class UnitFactory : IUnitFactory
     {
         private UnitFactory() { }
 
-        static readonly Dictionary<int, IUnit> _unitsDict = new Dictionary<int, IUnit>();
+        private static UnitFactory unitFactory { get; set; }
+
+        static readonly Dictionary<int, Func<IUnit>> _unitsDict = new Dictionary<int, Func<IUnit>>();
         static Dictionary<int, bool> _isMoneyEnoughDict = new Dictionary<int, bool>();
 
+        static Logger logger = new Logger();
+
+        public static UnitFactory GetInstance()
+        {
+            if (unitFactory == null)
+            {
+                unitFactory = new UnitFactory();
+                unitFactory.RegisterUnits();
+            }
+            return unitFactory;
+        }
         public IUnit CreateUnit(int id, int money)
         {
             RecalculateMoneyFlags(money);
             if (!IsMoneyEnough())
                 return null;
 
-            if (_unitsDict.TryGetValue(id, out IUnit type))
-                return (IUnit)type.Clone();
+            Func<IUnit> constructor = null;
+            if (_unitsDict.TryGetValue(id, out constructor))
+            {
+                var obj = constructor();
+                return new Proxy(obj);
+            }
 
             throw new ArgumentException("No type registered for this id");
         }
 
-        public static void Register<Tderived>(int id) where Tderived : IUnit
+        public static void Register(int id, Func<IUnit> ctor)
         {
-            var type = typeof(Tderived);
+            if (!_unitsDict.ContainsKey(id))
+            {
+                _unitsDict.Add(id, ctor);
+                RegisterFlags(id);
 
-            if (type.IsInterface || type.IsAbstract)
-                throw new ArgumentException("...");
+                logger.Log($"Зарегистрирован объект {ctor.ToString()} с id {id}");
+            }
+        }
 
-            _unitsDict.Add(id, (IUnit)type);
+        private void RegisterUnits()
+        {
+             UnitFactory.Register((int)Defaults.UNITS.ARCHER, () => 
+                new Archer(Defaults.Archer.price, Defaults.Archer.health, Defaults.Archer.attack, Defaults.Archer.defence, Defaults.Archer.specialActionStrength, Defaults.Archer.range));
 
-            RegisterFlags(id);
+            UnitFactory.Register((int)Defaults.UNITS.INFANTRY, () =>
+                new Infantry(Defaults.Infantry.price, Defaults.Infantry.health, Defaults.Infantry.attack, Defaults.Infantry.defence, Defaults.Infantry.specialActionStrength, Defaults.Infantry.range));
+
+            UnitFactory.Register((int)Defaults.UNITS.HEALER, () =>
+                new Healer(Defaults.Healer.price, Defaults.Healer.health, Defaults.Healer.attack, Defaults.Healer.defence, Defaults.Healer.specialActionStrength, Defaults.Healer.range));
+
+            UnitFactory.Register((int)Defaults.UNITS.KNIGHT, () =>
+                new Knight(Defaults.Knight.price, Defaults.Knight.health, Defaults.Knight.attack, Defaults.Knight.defence));
+
+            UnitFactory.Register((int)Defaults.UNITS.WIZARD, () =>
+               new Wizard(Defaults.Wizard.price, Defaults.Wizard.health, Defaults.Wizard.attack, Defaults.Wizard.defence, Defaults.Wizard.specialActionStrength, Defaults.Wizard.range));
         }
 
         private static void RegisterFlags(int id)
@@ -49,7 +80,7 @@ namespace ConsoleGame.Army.Units.Impl
         {
             bool result = false;
 
-            foreach(var flag in _isMoneyEnoughDict)
+            foreach (var flag in _isMoneyEnoughDict)
             {
                 result = result || flag.Value;
             }
@@ -59,7 +90,10 @@ namespace ConsoleGame.Army.Units.Impl
 
         private static void RecalculateMoneyFlags(int money)
         {
-            _isMoneyEnoughDict = _isMoneyEnoughDict.Select(v => new KeyValuePair<int, bool>(v.Key, _unitsDict[v.Key].Cost >= money)).ToDictionary(v => v.Key, v=> v.Value);
+            _isMoneyEnoughDict = _isMoneyEnoughDict.Select(v => {
+                IUnit obj = _unitsDict[v.Key]();
+                return new KeyValuePair<int, bool>(v.Key, obj.Cost <= money);
+            }).ToDictionary(v => v.Key, v=> v.Value);
         }
     }
 }

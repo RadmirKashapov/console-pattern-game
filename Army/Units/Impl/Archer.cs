@@ -6,12 +6,14 @@ namespace ConsoleGame.Army.Units.Impl
 {
     class Archer : IUnit, ICloneable, ISpecialAction
     {
-        public int Cost { get; }
+        public int Cost { get; set; }
         public int Hp { get; set; }
         public int Ad { get; set; }
         public int Df { get; set; }
         public int SpecialActionStrength { get ; set ; }
         public int Range { get; set; }
+
+        public string Name { get; set; }
 
         public Archer(int cost, int hp, int ad, int df, int specialActionStrength, int range)
         {
@@ -21,6 +23,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.Df = df;
             this.SpecialActionStrength = specialActionStrength;
             this.Range = range;
+            this.Name = Defaults.Archer.name;
         }
 
         public Archer(Archer archer)
@@ -31,6 +34,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.Df = archer.Df;
             this.SpecialActionStrength = archer.SpecialActionStrength;
             this.Range = archer.Range;
+            this.Name = archer.Name;
         }
         public object Clone()
         {
@@ -48,6 +52,7 @@ namespace ConsoleGame.Army.Units.Impl
             if (unit.Df > SpecialActionStrength)
             {
                 unit.Df -= SpecialActionStrength;
+                
                 if (unit.Df < 0)
                     unit.Df = 0;
 

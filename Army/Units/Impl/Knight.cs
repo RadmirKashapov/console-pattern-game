@@ -4,13 +4,15 @@ using System.Text;
 
 namespace ConsoleGame.Army.Units.Impl
 {
-    class Knight : IUnit, ICloneable
+    class Knight : IUnit, ICloneable, IFashionable
     {
-        public int Cost { get; }
+        public int Cost { get; set; }
 
         public int Hp { get; set; }
         public int Ad { get; set; }
         public int Df { get; set; }
+        public string Name { get; set; }
+        public Dictionary<int, string> Accessories { get; set; }
 
         public Knight(int cost, int hp, int ad, int df)
         {
@@ -18,6 +20,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.Hp = hp;
             this.Ad = ad;
             this.Df = df;
+            this.Name = Defaults.Knight.name;
         }
         public Knight(Knight knight)
         {
@@ -25,6 +28,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.Hp = knight.Hp;
             this.Ad = knight.Ad;
             this.Df = knight.Df;
+            this.Name = knight.Name;
         }
         public object Clone()
         {

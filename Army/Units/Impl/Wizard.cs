@@ -6,20 +6,24 @@ namespace ConsoleGame.Army.Units.Impl
 {
     class Wizard : IUnit, ICloneable, ISpecialAction
     {
-        public int Cost { get; }
+        public int Cost { get; set; }
 
         public int Hp { get; set; }
         public int Ad { get; set; }
         public int Df { get; set; }
-        public int SpecialActionStrength { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int SpecialActionStrength { get ; set; }
+        public int Range { get; set; }
+        public string Name { get; set; }
 
-        public Wizard(int cost, int hp, int ad, int df, int specialActionStrength)
+        public Wizard(int cost, int hp, int ad, int df, int specialActionStrength, int range)
         {
             this.Cost = cost;
             this.Hp = hp;
             this.Ad = ad;
             this.Df = df;
             this.SpecialActionStrength = specialActionStrength;
+            this.Range = range;
+            this.Name = Defaults.Wizard.name;
         }
         public Wizard(Wizard wizard)
         {
@@ -28,7 +32,10 @@ namespace ConsoleGame.Army.Units.Impl
             this.Ad = wizard.Ad;
             this.Df = wizard.Df;
             this.SpecialActionStrength = wizard.SpecialActionStrength;
+            this.Range = wizard.Range;
+            this.Name = wizard.Name;
         }
+
         public object Clone()
         {
             return new Wizard(this);
@@ -36,7 +43,7 @@ namespace ConsoleGame.Army.Units.Impl
 
         public IUnit DoSpecialAction(IUnit unit)
         {
-            if (unit is ICloneable)
+            if (unit is ICloneable && (unit is Archer || unit is Infantry))
             {
                 Random rnd = new Random();
                 int magic = rnd.Next(1, 3);
