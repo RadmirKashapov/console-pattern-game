@@ -10,11 +10,12 @@ namespace ConsoleGame.Game.Services.Impl
 {
     class GameNavigation
     {
-        UserArmy firstArmy = new UserArmy();
-        UserArmy secondArmy = new UserArmy();
+        UserArmy firstArmy { get; set; } = null;
+        UserArmy secondArmy { get; set; } = null;
         Logger logger = new Logger();
         CommandManager commandManager;
         IMode mode;
+        Play play { get; set; } = null; 
         private void Menu()
         {
 
@@ -22,7 +23,7 @@ namespace ConsoleGame.Game.Services.Impl
 
             Console.WriteLine();
 
-            Console.WriteLine("1. Создать армию");
+            Console.WriteLine("1. Создать новую армию");
             Console.WriteLine("2. Показать состав армии");
             Console.WriteLine("3. Сделать ход");
             Console.WriteLine("4. Отменить ход");
@@ -39,6 +40,10 @@ namespace ConsoleGame.Game.Services.Impl
             switch (answer)
             {
                 case "1":
+                    commandManager = null;
+                    firstArmy = new UserArmy(1);
+                    secondArmy = new UserArmy(1);
+                    mode = null;
 
                     firstArmy.SetName("Армия джедаев");
 
@@ -77,25 +82,27 @@ namespace ConsoleGame.Game.Services.Impl
 
                     logger.Log("Армия 2 создана");
 
+                    play = new Play(firstArmy, secondArmy);
+
                     Console.WriteLine("Армии созданы");
+
+                    Console.WriteLine($"\n\t{firstArmy.GetInfo()}\n\tVS\n\n\t{secondArmy.GetInfo()}");
+
                     logger.Log("Армии созданы");
 
                     Menu();
                     break;
 
                 case "2":
-                    Console.WriteLine("Армия 1");
 
-                    if (firstArmy.IsEmpty() || secondArmy.IsEmpty())
+                    if (play == null)
                     {
                         Console.WriteLine("Армии не созданы");
                         Menu();
                         break;
                     }
 
-                    Console.WriteLine(firstArmy.GetInfo());
-
-                    Console.WriteLine(secondArmy.GetInfo());
+                    Console.WriteLine(play.GetArmyInfo());
 
                     Menu();
                     break;
@@ -112,7 +119,7 @@ namespace ConsoleGame.Game.Services.Impl
                     ChooseGameModeMenu();
 
                     commandManager.Step();
-                    var stepInfo = commandManager.GetStepInfo();
+                    var stepInfo = play.GetStepInfo();
                     Console.WriteLine(stepInfo);
                     logger.Log(stepInfo);
                     Menu();
@@ -168,7 +175,7 @@ namespace ConsoleGame.Game.Services.Impl
 
                     commandManager.PlayToTheEnd();
 
-                    var info = commandManager.GetGameInfo();
+                    var info = play.GetGameInfo();
 
                     logger.Log(info);
 
@@ -222,8 +229,11 @@ namespace ConsoleGame.Game.Services.Impl
                     break;
             }
 
-            if (commandManager == null)
-                commandManager = new CommandManager(firstArmy, secondArmy, mode);
+            if (commandManager == null) {
+                commandManager = new CommandManager(play);
+                commandManager.SetGameMode(mode);
+            }
+
             else
                 commandManager.SetGameMode(mode);
 

@@ -45,24 +45,21 @@ namespace ConsoleGame.Army.Units.Impl
         {
 
             Random rnd = new Random();
-            int magic = rnd.Next(0, 3);
-            int heal = rnd.Next(0, unit.Hp);
+            int heal = rnd.Next(0, unit.Hp+1);
+            
+            unit.Hp = heal;
 
-            if (magic == 1 || magic == 2)
-            {
-                unit.Hp = heal;
-
-                if (unit.Hp > 100)
-                    unit.Hp = 100;
-            }
+            if (unit.Hp > 100)
+                unit.Hp = 100;
         }
 
         public IUnit DoSpecialAction(IUnit unit)
         {
 
-            if(unit is IHealable)
+            if(unit is IHealable && unit.Hp < 100)
             {
                 Heal(unit);
+                return unit;
             }
 
             return unit;

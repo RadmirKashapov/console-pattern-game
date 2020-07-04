@@ -46,7 +46,7 @@ namespace ConsoleGame.Army.Units.Impl
             if (unit is ICloneable && (unit is Archer || unit is Infantry))
             {
                 Random rnd = new Random();
-                int magic = rnd.Next(1, 3);
+                int magic = rnd.Next(0, 3);
                 if (magic == 1 || magic == 2)
                 {
                     return (IUnit)unit.Clone();

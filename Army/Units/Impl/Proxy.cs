@@ -32,8 +32,9 @@ namespace ConsoleGame.Army.Units.Impl
 
         public void DeathNotifier()
         {
-            var player = new Player();
-            player.Play(@"C:\Users\mylif\source\repos\Projects\ConsoleGame\beep.wav");
+            //var player = new Player();
+            //player.Play(@"C:\Users\mylif\source\repos\Projects\ConsoleGame\beep.wav");
+            Console.Beep();
         }
 
         public IUnit DoSpecialAction(IUnit unit)

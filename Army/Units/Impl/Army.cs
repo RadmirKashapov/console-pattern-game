@@ -13,11 +13,28 @@ namespace ConsoleGame.Army.Units.Impl
         public string Name { get; set; }
         public int Money { get; set; }
 
-        private List<IUnit> Units = new List<IUnit>();
-        public UserArmy()
+        private List<IUnit> Units { get; set; }
+        public UserArmy(int money)
         {
             unitFactory = UnitFactory.GetInstance();
             logger = new Logger();
+            Money = money;
+            Units = new List<IUnit>();
+        }
+
+        public UserArmy(UserArmy army)
+        {
+            unitFactory = UnitFactory.GetInstance();
+            logger = new Logger();
+            Name = army.Name;
+            Money = army.Money;
+
+            Units = new List<IUnit>();
+
+            foreach (var elem in army.Units)
+            {
+                Units.Add((IUnit)elem.Clone());
+            }
         }
 
         public void SetBank(int money)
@@ -70,6 +87,11 @@ namespace ConsoleGame.Army.Units.Impl
             return index;
         }
 
+        public void RemoveAllKilledUnits()
+        {
+            this.Units.RemoveAll(item => item == null);
+        }
+
         public bool IsEmpty()
         {
             return Units.Count == 0;
@@ -90,7 +112,7 @@ namespace ConsoleGame.Army.Units.Impl
 
         public UserArmy Copy()
         {
-            return (UserArmy)this.MemberwiseClone();
+            return new UserArmy(this);
         }
 
         public void Push(IUnit unit)

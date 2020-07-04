@@ -1,5 +1,6 @@
 ﻿using ConsoleGame.Army.Units;
 using ConsoleGame.Army.Units.Impl;
+using ConsoleGame.Infrastructure;
 using NetCoreAudio;
 using System;
 using System.Collections.Generic;
@@ -16,17 +17,24 @@ namespace ConsoleGame.Game.Services.Impl
         public string StepInfo { get; set; }
         public string GameInfo { get; set; }
 
-        public Play(UserArmy firstArmy, UserArmy secondArmy, IMode mode)
+        private Logger logger { get; set; }
+
+        public Play(UserArmy firstArmy, UserArmy secondArmy)
         {
             FirstPlayerArmy = firstArmy;
             SecondPlayerArmy = secondArmy;
-            GameMode = mode;
             EndOfGame = false;
+            logger = new Logger();
         }
 
         public void SetGameMode(IMode mode)
         {
             this.GameMode = mode;
+        }
+
+        public IMode GetGameMode()
+        {
+            return GameMode;
         }
 
         public void PlayToTheEnd()
@@ -35,6 +43,7 @@ namespace ConsoleGame.Game.Services.Impl
             {
                 Step();
                 GameInfo += StepInfo;
+                logger.Log(StepInfo);
                 Console.WriteLine(StepInfo);
             }
         }
@@ -63,21 +72,25 @@ namespace ConsoleGame.Game.Services.Impl
                 IUnit kicker = firstLineInFirst[i];
                 IUnit defender = firstLineInSecond[i];
 
-                StepInfo += $"\n\n {first.Name}. {kicker.GetInfo()}\n\n\t СРАЖАЕТСЯ С\n\n{second.Name}. {defender.GetInfo()}";
+                StepInfo += $"\n-------------------------------------------------------------------------------------";
+
+                StepInfo += $"\n\t{first.Name}. {kicker.GetInfo()}СРАЖАЕТСЯ С\n{second.Name}. {defender.GetInfo()}";
 
                 IUnit dead = kicker.TakeDamage(defender);
 
                 if (dead == null)
                 {
-                    StepInfo += $"\n\n{second.Name}. \n\n\t{defender.Name} ПОГИБ :(\n";
+                    StepInfo += $"\n\t{second.Name}. {defender.Name} ПОГИБ :(\n";
 
                     defender.DeathNotifier();
 
                     second.Remove(defender);
                 }
                 else
-                    StepInfo += $"\n\n{second.Name}. \n\n\t АТАКУЕТ => {defender.GetInfo()}\n";
+                    StepInfo += $"\n\t{second.Name}. ИТОГ ПОСЛЕ АТАКИ {first.Name} => {defender.GetInfo()}\n";
+
             }
+
         }
 
         private List<ISpecialAction> GetSpecialUnitsInRow(UserArmy army, int column)
@@ -86,9 +99,9 @@ namespace ConsoleGame.Game.Services.Impl
             int i = army.Count() - column - 1;
             while (i >= 0)
             {
-                if (((Proxy)army[i]).Unit is ISpecialAction)
+                if (army[i] is ISpecialAction)
                 {
-                    specials.Add((ISpecialAction)(((Proxy)army[i]).Unit));
+                    specials.Add((ISpecialAction)army[i]);
 
                 }
 
@@ -106,101 +119,15 @@ namespace ConsoleGame.Game.Services.Impl
             {
                 return GameMode.GetInfantryTargets(first, unit);
             }
-            else
+            else if(unit is Healer)
             {
                 return GameMode.GetDoctorTargets(first, unit);
-            }
+            } 
+            else
+                return GameMode.GetOtherTargets(first, unit);
         }
 
-        //private void DoSpecialAction(UserArmy one, UserArmy other)
-        //{
-        //    if (GameOver()) return;
-
-        //    for (int i = 0; i < GameMode.rowSize; i++)
-        //    {
-        //        var specials = GetSpecialUnitsInRow(one, i);
-        //        if (specials.Count == 0) continue;
-
-        //        Random rnd = new Random();
-        //        int indexSpecial = rnd.Next(0, specials.Count - 1);
-        //        var victims = GetTargets(one, other, specials[indexSpecial]);
-
-
-
-        //        if (victims.Count == 0) continue;
-
-        //        int indexVictim = rnd.Next(0, victims.Count - 1);
-
-
-        //        IUnit beforeSpecial = (IUnit)victims[indexVictim].Clone();
-        //        IUnit afterSpecial = specials[indexSpecial].DoSpecialAction(victims[indexVictim]);
-
-        //        StepInfo += "\nSpecial action.";
-
-        //        if (specials[indexSpecial] is Archer)
-        //        {
-        //            StepInfo += $"\n\n{one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}\n\n\t СРАЖАЕТСЯ ПРОТИВ \n\n Армии {other.Name}. {beforeSpecial.GetInfo()}";
-
-        //            if (afterSpecial == specials[indexSpecial])
-        //            {
-        //                StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {other.Name}. {victims[indexVictim].Name} ПОГИБ :(\n";
-
-        //                afterSpecial.DeathNotifier();
-
-        //                other.Remove(afterSpecial);
-        //            }
-        //            else
-        //                StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {other.Name}. {victims[indexVictim].GetInfo()} РАНЕН \n";
-
-        //        }
-
-        //        else if (specials[indexSpecial] is Healer)
-        //        {
-        //            if (afterSpecial != null)
-        //            {
-        //                StepInfo += $"\n{one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}\n\n\t!!!!!! ЛЕЧИТ!!!!!!\n\nАрмия {one.Name}. {beforeSpecial.GetInfo()}";
-        //                StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {one.Name}. \n\t{victims[indexVictim].GetInfo()} ВЫЛЕЧЕН\n";
-        //            }
-        //            else
-        //            {
-        //                StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nНа этом шаге никого НЕ вылечили {one.Name}.";
-        //            }
-        //        }
-
-        //        else if (specials[indexSpecial] is Wizard)
-        //        {
-        //            if (afterSpecial != null)
-        //            {
-        //                StepInfo += $"\nАрмия {one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}\n\n\tMAGIC TIME! Let's CLONE!\n\nАрмия {one.Name}. {beforeSpecial.GetInfo()}";
-        //                StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {one.Name}. {victims[indexVictim].GetInfo()} УСПЕШНО КЛОНИРОВАН.\n";
-        //            }
-        //            else
-        //            {
-        //                StepInfo += $"\n\t\t\t||\n\t\t\t\\/\n ДУХИ МОЛЧАТ - НИКТО НЕ КЛОНИРОВАН {one.Name}. ";
-        //            }
-        //        }
-
-        //        else
-        //        {
-        //            if (specials[indexSpecial] is Infantry)
-        //            {
-        //                if (afterSpecial != null)
-        //                {
-        //                    StepInfo += $"\nАрмия {one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}\n\n\tОДЕВАЕТ\n\nArmy {one.Name}. {beforeSpecial.GetInfo()}";
-        //                    StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {one.Name}. {victims[indexVictim].GetInfo()} ОДЕТ В СПЕЦИАЛЬНУЮ ЭКИПИРОВКУ.\n";
-        //                }
-        //                else
-        //                {
-        //                    StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nНИКТО НЕ ОДЕТ В СПЕЦИАЛЬНУЮ ЭКИПИРОВКУ {one.Name}. ";
-        //                }
-
-        //            }
-
-        //        }
-
-
-        //    }
-        //}
+      
 
         private void DoSpecialAction(UserArmy one, UserArmy other)
         {
@@ -225,22 +152,29 @@ namespace ConsoleGame.Game.Services.Impl
                 IUnit beforeSpecial = (IUnit)victims[indexVictim].Clone();
                 IUnit afterSpecial = specials[indexSpecial].DoSpecialAction(victims[indexVictim]);
 
-                StepInfo += "\nSpecial action.";
+                StepInfo += "\n-------------------------------------------------------------------------------------";
+
+                StepInfo += "\n*****************************************";
+                
+                StepInfo += "\n\tВыполнение специальных функций юнитов";
+
+                StepInfo += "\n*****************************************\n";
+
 
                 if (specials[indexSpecial] is Archer)
                 {
-                    StepInfo += $"\n\n{one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}\n\n\t СРАЖАЕТСЯ ПРОТИВ \n\n Армии {other.Name}. {beforeSpecial.GetInfo()}";
+                    StepInfo += $"\n\t{one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}СРАЖАЕТСЯ ПРОТИВ \nАрмии {other.Name}. {beforeSpecial.GetInfo()}";
 
                     if (afterSpecial == specials[indexSpecial])
                     {
-                        StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {other.Name}. {victims[indexVictim].Name} ПОГИБ :(\n";
+                        StepInfo += $"\n\tАрмия {other.Name}. {victims[indexVictim].Name} ПОГИБ :(\n";
 
                         afterSpecial.DeathNotifier();
 
                         other.Remove(afterSpecial);
                     }
                     else
-                        StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {other.Name}. {victims[indexVictim].GetInfo()} РАНЕН \n";
+                        StepInfo += $"\n\tАрмия {other.Name}. ИТОГ ПОСЛЕ АТАКИ {one.Name} => {victims[indexVictim].GetInfo()} РАНЕН \n";
 
                 }
 
@@ -248,28 +182,28 @@ namespace ConsoleGame.Game.Services.Impl
                 {
                     if (afterSpecial != null)
                     {
-                        StepInfo += $"\n{one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}\n\n\t!!!!!! ЛЕЧИТ!!!!!!\n\nАрмия {one.Name}. {beforeSpecial.GetInfo()}";
-                        StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {one.Name}. \n\t{victims[indexVictim].GetInfo()} ВЫЛЕЧЕН\n";
+                        StepInfo += $"\n\t{one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}ЛЕЧИТ\nАрмия {one.Name}. {beforeSpecial.GetInfo()}";
+                        StepInfo += $"\n\tАрмия {one.Name}. ИТОГ => {victims[indexVictim].GetInfo()} ВЫЛЕЧЕН\n";
                     }
                     else
                     {
-                        StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nНа этом шаге никого НЕ вылечили {one.Name}.";
+                        StepInfo += $"\n\tНа этом шаге никого НЕ вылечили {one.Name}.";
                     }
                 }
 
                 else if (specials[indexSpecial] is Wizard)
                 {
-                    StepInfo += $"\nИндекс колдуна: {indexSpecial}";
-                    StepInfo += $"\nИндекс жертвы: {indexVictim}";
+                    StepInfo += $"\n\tИндекс колдуна: {indexSpecial}";
+                    StepInfo += $"\n\tИндекс жертвы: {indexVictim}";
                     if (afterSpecial != null)
                     {
-                        StepInfo += $"\nАрмия {one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}\n\n\tMAGIC TIME! Let's CLONE!\n\nАрмия {one.Name}. {beforeSpecial.GetInfo()}";
-                        StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {one.Name}. {victims[indexVictim].GetInfo()} УСПЕШНО КЛОНИРОВАН.\n";
+                        StepInfo += $"\n\tАрмия {one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}MAGIC TIME!\nАрмия {one.Name}. {beforeSpecial.GetInfo()}";
+                        StepInfo += $"\n\tАрмия {one.Name}. ИТОГ => {victims[indexVictim].GetInfo()} УСПЕШНО КЛОНИРОВАН.\n";
                         one.Push(afterSpecial);
                     }
                     else
                     {
-                        StepInfo += $"\n\t\t\t||\n\t\t\t\\/\n ДУХИ МОЛЧАТ - НИКТО НЕ КЛОНИРОВАН {one.Name}. ";
+                        StepInfo += $"\n\tВОЛШЕБНИК УСТАЛЬ. НИКТО НЕ КЛОНИРОВАН {one.Name}. ";
                     }
                 }
 
@@ -277,14 +211,15 @@ namespace ConsoleGame.Game.Services.Impl
                 {
                     if (specials[indexSpecial] is Infantry)
                     {
-                        if (afterSpecial != null)
+                        if (afterSpecial.Name != beforeSpecial.Name)
                         {
-                            StepInfo += $"\nАрмия {one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}\n\n\tОДЕВАЕТ\n\nArmy {one.Name}. {beforeSpecial.GetInfo()}";
-                            StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nАрмия {one.Name}. {victims[indexVictim].GetInfo()} ОДЕТ В СПЕЦИАЛЬНУЮ ЭКИПИРОВКУ.\n";
+                            victims[indexVictim] = afterSpecial;
+                            StepInfo += $"\n\tАрмия {one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}ОДЕВАЕТ\nArmy {one.Name}. {beforeSpecial.GetInfo()}";
+                            StepInfo += $"\n\tАрмия {one.Name}. ИТОГ ШОППИНГА => {victims[indexVictim].GetInfo()} ОДЕТ В СПЕЦИАЛЬНУЮ ЭКИПИРОВКУ.\n";
                         }
                         else
                         {
-                            StepInfo += $"\n\t\t\t||\n\t\t\t\\/\nНИКТО НЕ ОДЕТ В СПЕЦИАЛЬНУЮ ЭКИПИРОВКУ {one.Name}. ";
+                            StepInfo += $"\n\tМАГАЗИНЫ ЗАКРЫТЫ НА САМОИЗОЛЯЦИЮ. НИКТО НЕ ОДЕТ В СПЕЦИАЛЬНУЮ ЭКИПИРОВКУ {one.Name}. ";
                         }
 
                     }
@@ -299,11 +234,11 @@ namespace ConsoleGame.Game.Services.Impl
         {
             if (EndOfGame)
             {
-                StepInfo = "Game over. ";
+                StepInfo = "\tGame over. ";
                 return;
             }
 
-            StepInfo = "\nВедется бой. ";
+            StepInfo = "\n\n\tВедется бой. \n";
 
             Fight(FirstPlayerArmy, SecondPlayerArmy);
             Fight(SecondPlayerArmy, FirstPlayerArmy);
@@ -342,6 +277,11 @@ namespace ConsoleGame.Game.Services.Impl
         public string GetGameInfo()
         {
             return GameInfo;
+        }
+
+        public string GetArmyInfo()
+        {
+            return $"\n\t{FirstPlayerArmy.GetInfo()}\n\tVS\n\t{SecondPlayerArmy.GetInfo()}";
         }
 
     }

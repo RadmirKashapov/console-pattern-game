@@ -36,7 +36,7 @@ namespace ConsoleGame.Army.Units.Impl
             if (_unitsDict.TryGetValue(id, out constructor))
             {
                 var obj = constructor();
-                return new Proxy(obj);
+                return obj;
             }
 
             throw new ArgumentException("No type registered for this id");

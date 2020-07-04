@@ -14,9 +14,9 @@ namespace ConsoleGame.Army.Units.Impl
 
         public override string AddAccessory()
         {
-            unit.Df += 10;
-            unit.Name +=  " " + base.AddAccessory();
-            return unit.Name;
+            this.unit.Df += 10;
+            this.unit.Name +=  " " + base.AddAccessory();
+            return this.unit.Name;
         }
 
 

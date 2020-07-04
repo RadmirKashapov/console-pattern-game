@@ -8,7 +8,7 @@ namespace ConsoleGame.Army.Units.Impl.Components
     {
         public override string AddAccessory()
         {
-            return "Броня";
+            return "с броней";
         }
     }
 }

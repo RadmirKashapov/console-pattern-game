@@ -55,6 +55,7 @@ namespace ConsoleGame.Army.Units.Impl
                     return unit;
 
                 var decorator = new Decorator(accessory, unit);
+                var str = decorator.AddAccessory();
 
                 return decorator.GetUnit();
 
@@ -65,7 +66,6 @@ namespace ConsoleGame.Army.Units.Impl
 
         private AccessoryComponent GetAccessoryComponent(IFashionable unit)
         {
-            Random rnd = new Random();
             bool flag = true;
             int magic = 0;
             AccessoryComponent accessory = null;
@@ -82,7 +82,8 @@ namespace ConsoleGame.Army.Units.Impl
                     return null;
                 }
 
-                magic = rnd.Next(0, 3);
+                Random rnd = new Random();
+                magic = rnd.Next(0, 4);
 
                 if (unit.Accessories.ContainsKey(magic))
                 {

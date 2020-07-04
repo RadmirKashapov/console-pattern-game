@@ -32,10 +32,13 @@ namespace ConsoleGame.Game.Services
 
             for (int i = 0; i < firstArmy.Count(); i++)
             {
-                int c = (firstArmy.Count() - i - 1) % rowSize;
-                int r = (firstArmy.Count() - i - 1) / rowSize;
-                if (Math.Sqrt((c - col) * (c - col) + (r - row) * (r - row)) <= unit.Range)
-                    targets.Add(firstArmy[i]);
+                if (firstArmy[i] is IHealable)
+                {
+                    int c = (firstArmy.Count() - i - 1) % rowSize;
+                    int r = (firstArmy.Count() - i - 1) / rowSize;
+                    if (Math.Sqrt((c - col) * (c - col) + (r - row) * (r - row)) <= unit.Range)
+                        targets.Add(firstArmy[i]);
+                }
             }
             return targets;
         }
@@ -54,9 +57,27 @@ namespace ConsoleGame.Game.Services
                 int r = (firstArmy.Count() - i - 1) / rowSize;
                 if (Math.Sqrt((c - col) * (c - col) + (r - row) * (r - row)) <= unit.Range)
                 {
-                    if(firstArmy[i] is Proxy && ((Proxy)firstArmy[i]).Unit is IFashionable)
+                    if(firstArmy[i] is IFashionable)
                       targets.Add(firstArmy[i]);
                 }
+            }
+            return targets;
+        }
+
+        public List<IUnit> GetOtherTargets(UserArmy firstArmy, ISpecialAction unit)
+        {
+            var targets = new List<IUnit>();
+            int index = firstArmy.IndexOf((IUnit)unit);
+
+            int col = (firstArmy.Count() - index - 1) % rowSize; //колонна
+            int row = (firstArmy.Count() - index - 1) / rowSize; //ряд
+
+            for (int i = 0; i < firstArmy.Count(); i++)
+            {
+                int c = (firstArmy.Count() - i - 1) % rowSize;
+                int r = (firstArmy.Count() - i - 1) / rowSize;
+                if (Math.Sqrt((c - col) * (c - col) + (r - row) * (r - row)) <= unit.Range)
+                    targets.Add(firstArmy[i]);
             }
             return targets;
         }

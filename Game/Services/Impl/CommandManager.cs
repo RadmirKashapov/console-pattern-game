@@ -9,11 +9,28 @@ namespace ConsoleGame.Game.Services.Impl
     {
         private Stack<ICommand> StackUndo = new Stack<ICommand>();
         private Stack<ICommand> StackRedo = new Stack<ICommand>();
-        private Play playfield;
 
-        public CommandManager(UserArmy firstArmy, UserArmy secondArmy, IMode mode)
+        private int UndoCount
         {
-            playfield = new Play(firstArmy, secondArmy, mode);
+            get
+            {
+                return StackUndo.Count;
+            }
+        }
+
+        private int RedoCount
+        {
+            get
+            {
+                return StackRedo.Count;
+            }
+        }
+
+        private Play playfield { get; set; }
+
+        public CommandManager(Play play)
+        {
+            playfield = play;
         }
 
         public void SetGameMode(IMode mode)
@@ -30,7 +47,7 @@ namespace ConsoleGame.Game.Services.Impl
 
         public void Undo()
         {
-            if (StackUndo.Count != 0)
+            if (UndoCount != 0)
             {
                 ICommand cmd = StackUndo.Pop();
                 cmd.Undo();
@@ -40,7 +57,7 @@ namespace ConsoleGame.Game.Services.Impl
 
         public void Redo()
         {
-            if (StackRedo.Count != 0)
+            if (RedoCount != 0)
             {
                 ICommand cmd = StackRedo.Pop();
                 cmd.Redo();
@@ -56,16 +73,6 @@ namespace ConsoleGame.Game.Services.Impl
         public void PlayToTheEnd()
         {
             Invoke(new PlayToTheEndCommand(playfield));
-        }
-
-        public string GetGameInfo()
-        {
-            return playfield.GetGameInfo();
-        }
-
-        public string GetStepInfo()
-        {
-            return playfield.GetStepInfo();
         }
 
     }

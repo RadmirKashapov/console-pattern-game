@@ -52,7 +52,7 @@ namespace ConsoleGame.Army.Units.Impl
             if (unit.Df > SpecialActionStrength)
             {
                 unit.Df -= SpecialActionStrength;
-                
+
                 if (unit.Df < 0)
                     unit.Df = 0;
 
