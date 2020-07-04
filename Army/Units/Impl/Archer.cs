@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ConsoleGame.Army.Units.Impl
 {
-    class Archer : IUnit, ICloneable, ISpecialAction
+    class Archer : IUnit, ICloneable, ISpecialAction, IHealable
     {
         public int Cost { get; set; }
         public int Hp { get; set; }

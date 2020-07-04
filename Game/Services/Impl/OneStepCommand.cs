@@ -13,6 +13,9 @@ namespace ConsoleGame.Game.Services.Impl
         private UserArmy firstAfter { get; set; }
         private UserArmy secondAfter { get; set; }
 
+        private bool statusBefore { get; set; }
+        private bool statusAfter { get; set; }
+
         public OneStepCommand(Play play)
         {
             Playfield = play;
@@ -23,21 +26,25 @@ namespace ConsoleGame.Game.Services.Impl
         {
             firstBefore = Playfield.FirstPlayerArmy.Copy();
             secondBefore = Playfield.SecondPlayerArmy.Copy();
+            statusBefore = Playfield.GetGameStatus();
             Playfield.Step();
             firstAfter = Playfield.FirstPlayerArmy.Copy();
             secondAfter = Playfield.SecondPlayerArmy.Copy();
+            statusAfter = Playfield.GetGameStatus();
         }
 
         public void Redo()
         {
             Playfield.FirstPlayerArmy = firstAfter;
             Playfield.SecondPlayerArmy = secondAfter;
+            Playfield.SetGameStatus(statusAfter);
         }
 
         public void Undo()
         {
             Playfield.FirstPlayerArmy = firstBefore;
             Playfield.SecondPlayerArmy = secondBefore;
+            Playfield.SetGameStatus(statusBefore);
         }
     }
 }

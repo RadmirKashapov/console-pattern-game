@@ -14,11 +14,11 @@ namespace ConsoleGame
 
         static void Main(string[] args)
         {
-            Logger logger = new Logger();
+            Logger logger = Logger.GetInstance();
 
             Console.OutputEncoding = System.Text.Encoding.Unicode;
 
-            string shrekPath = @"shrek.txt";
+            string shrekPath = @"C:\Users\mylif\source\repos\Projects\ConsoleGame\shrek.txt";
             string[] shrekArray = File.ReadAllLines(shrekPath);
 
             Console.WriteLine();
@@ -33,7 +33,7 @@ namespace ConsoleGame
             gameNavigation.Start();
 
 
-            string catPath = @"cat.txt";
+            string catPath = @"C:\Users\mylif\source\repos\Projects\ConsoleGame\cat.txt";
             string[] catArray = File.ReadAllLines(catPath);
 
             Console.WriteLine();

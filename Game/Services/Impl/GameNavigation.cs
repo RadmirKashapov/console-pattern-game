@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Text;
+using System.Threading;
 
 namespace ConsoleGame.Game.Services.Impl
 {
@@ -12,7 +13,7 @@ namespace ConsoleGame.Game.Services.Impl
     {
         UserArmy firstArmy { get; set; } = null;
         UserArmy secondArmy { get; set; } = null;
-        Logger logger = new Logger();
+        Logger logger = Logger.GetInstance();
         CommandManager commandManager;
         IMode mode;
         Play play { get; set; } = null; 
@@ -83,6 +84,7 @@ namespace ConsoleGame.Game.Services.Impl
                     logger.Log("Армия 2 создана");
 
                     play = new Play(firstArmy, secondArmy);
+                    commandManager = new CommandManager(play);
 
                     Console.WriteLine("Армии созданы");
 
@@ -95,7 +97,7 @@ namespace ConsoleGame.Game.Services.Impl
 
                 case "2":
 
-                    if (play == null)
+                    if (commandManager == null)
                     {
                         Console.WriteLine("Армии не созданы");
                         Menu();
@@ -109,7 +111,7 @@ namespace ConsoleGame.Game.Services.Impl
 
                 case "3":
 
-                    if (firstArmy.IsEmpty())
+                    if (play == null)
                     {
                         Console.WriteLine("Армии не созданы");
                         Menu();
@@ -127,7 +129,7 @@ namespace ConsoleGame.Game.Services.Impl
 
                 case "4":
 
-                    if (firstArmy.IsEmpty())
+                    if (play == null)
                     {
                         Console.WriteLine("Армии не созданы");
                         Menu();
@@ -145,7 +147,7 @@ namespace ConsoleGame.Game.Services.Impl
 
                 case "5":
 
-                    if (firstArmy.IsEmpty())
+                    if (play == null)
                     {
                         Console.WriteLine("Армии не созданы");
                         Menu();
@@ -164,7 +166,7 @@ namespace ConsoleGame.Game.Services.Impl
 
                 case "6":
 
-                    if (firstArmy.IsEmpty())
+                    if (play == null)
                     {
                         Console.WriteLine("Армии не созданы");
                         Menu();
@@ -205,37 +207,20 @@ namespace ConsoleGame.Game.Services.Impl
 
             string answer = Console.ReadLine();
 
-            switch (answer)
+            if(answer != "1" && answer != "2" && answer != "3")
             {
-                case "1":
+                Console.WriteLine("Ошибка. Выбранной операции нет в списке. Попробуйте еще раз.");
 
-                    mode = new OneToOneGameMode();
-                    break;
-
-                case "2":
-
-                    mode = new ThreeToThreeGameMode();
-                    break;
-
-                case "3":
-
-                    mode = new NToMGameMode(Math.Min(firstArmy.Count(), secondArmy.Count()));
-                    break;
-
-                default:
-                    Console.WriteLine("Ошибка. Выбранной операции нет в списке. Попробуйте еще раз.");
-
-                    ChooseGameModeMenu();
-                    break;
+                ChooseGameModeMenu();
             }
 
             if (commandManager == null) {
                 commandManager = new CommandManager(play);
-                commandManager.SetGameMode(mode);
+                commandManager.SetGameMode(answer);
             }
 
             else
-                commandManager.SetGameMode(mode);
+                commandManager.SetGameMode(answer);
 
         }
 

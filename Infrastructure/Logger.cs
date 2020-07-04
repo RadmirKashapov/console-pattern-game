@@ -13,6 +13,18 @@ namespace ConsoleGame.Infrastructure
 
     class Logger: LogBase
     {
+        private Logger() { }
+        private static Logger _logger { get; set; }
+
+        public static Logger GetInstance()
+        {
+            if (_logger == null)
+            {
+                _logger = new Logger();
+            }
+            return _logger;
+        }
+
         public string filePath = @"C:\Users\mylif\source\repos\Projects\ConsoleGame\Log\log.txt";
         public override void Log(string message)
         {

@@ -12,20 +12,22 @@ namespace ConsoleGame.Army.Units.Impl
 
         private static UnitFactory unitFactory { get; set; }
 
-        static readonly Dictionary<int, Func<IUnit>> _unitsDict = new Dictionary<int, Func<IUnit>>();
-        static Dictionary<int, bool> _isMoneyEnoughDict = new Dictionary<int, bool>();
+        private static readonly Dictionary<int, Func<IUnit>> _unitsDict = new Dictionary<int, Func<IUnit>>();
+        private static Dictionary<int, bool> _isMoneyEnoughDict = new Dictionary<int, bool>();
 
-        static Logger logger = new Logger();
+        private static Logger logger { get; set; }
 
         public static UnitFactory GetInstance()
         {
             if (unitFactory == null)
             {
                 unitFactory = new UnitFactory();
+                logger = Logger.GetInstance();
                 unitFactory.RegisterUnits();
             }
             return unitFactory;
         }
+
         public IUnit CreateUnit(int id, int money)
         {
             RecalculateMoneyFlags(money);

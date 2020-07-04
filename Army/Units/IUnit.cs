@@ -36,10 +36,5 @@ namespace ConsoleGame.Army.Units
             var info = $"Юнит {Name}. Здоровье: {Hp}. Атака: {Ad}. Защита: {Df}\n";
             return info;
         }
-
-        public void DeathNotifier()
-        {
-            Console.WriteLine("Beeep");
-        }
     }
 }

@@ -32,8 +32,14 @@ namespace ConsoleGame.Game.Services
 
             for (int i = 0; i < firstArmy.Count(); i++)
             {
-                if (firstArmy[i] is IHealable)
+                if (firstArmy[i] is IHealable && firstArmy[i].Hp < 100)
                 {
+                    if(firstArmy[i] is IFashionable fashionable && fashionable.Accessories != null)
+                    {
+                        if (fashionable.Accessories.Count > 0)
+                            continue;
+                    }
+
                     int c = (firstArmy.Count() - i - 1) % rowSize;
                     int r = (firstArmy.Count() - i - 1) / rowSize;
                     if (Math.Sqrt((c - col) * (c - col) + (r - row) * (r - row)) <= unit.Range)

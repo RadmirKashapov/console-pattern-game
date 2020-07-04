@@ -24,7 +24,7 @@ namespace ConsoleGame.Game.Services.Impl
             FirstPlayerArmy = firstArmy;
             SecondPlayerArmy = secondArmy;
             EndOfGame = false;
-            logger = new Logger();
+            logger = Logger.GetInstance();
         }
 
         public void SetGameMode(IMode mode)
@@ -82,7 +82,7 @@ namespace ConsoleGame.Game.Services.Impl
                 {
                     StepInfo += $"\n\t{second.Name}. {defender.Name} ПОГИБ :(\n";
 
-                    defender.DeathNotifier();
+                    second.DeathNotifier();
 
                     second.Remove(defender);
                 }
@@ -169,7 +169,7 @@ namespace ConsoleGame.Game.Services.Impl
                     {
                         StepInfo += $"\n\tАрмия {other.Name}. {victims[indexVictim].Name} ПОГИБ :(\n";
 
-                        afterSpecial.DeathNotifier();
+                        other.DeathNotifier();
 
                         other.Remove(afterSpecial);
                     }
@@ -282,6 +282,16 @@ namespace ConsoleGame.Game.Services.Impl
         public string GetArmyInfo()
         {
             return $"\n\t{FirstPlayerArmy.GetInfo()}\n\tVS\n\t{SecondPlayerArmy.GetInfo()}";
+        }
+
+        public bool GetGameStatus()
+        {
+            return EndOfGame;
+        }
+
+        public void SetGameStatus(bool status)
+        {
+            EndOfGame = status;
         }
 
     }

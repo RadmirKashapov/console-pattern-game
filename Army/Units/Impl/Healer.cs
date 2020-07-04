@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ConsoleGame.Army.Units.Impl
 {
-    class Healer : IUnit, ICloneable, ISpecialAction
+    class Healer : IUnit, ICloneable, ISpecialAction, IHealable
     {
         public int Cost { get; set; }
         public int Hp { get; set; }
@@ -45,9 +45,9 @@ namespace ConsoleGame.Army.Units.Impl
         {
 
             Random rnd = new Random();
-            int heal = rnd.Next(0, unit.Hp+1);
+            int heal = rnd.Next(0, 100);
             
-            unit.Hp = heal;
+            unit.Hp += heal;
 
             if (unit.Hp > 100)
                 unit.Hp = 100;
@@ -56,7 +56,7 @@ namespace ConsoleGame.Army.Units.Impl
         public IUnit DoSpecialAction(IUnit unit)
         {
 
-            if(unit is IHealable && unit.Hp < 100)
+            if(unit is IHealable)
             {
                 Heal(unit);
                 return unit;

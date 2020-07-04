@@ -33,8 +33,28 @@ namespace ConsoleGame.Game.Services.Impl
             playfield = play;
         }
 
-        public void SetGameMode(IMode mode)
+        public void SetGameMode(string answer)
         {
+            IMode mode = null;
+
+            switch (answer)
+            {
+                case "1":
+
+                    mode = new OneToOneGameMode();
+                    break;
+
+                case "2":
+
+                    mode = new ThreeToThreeGameMode();
+                    break;
+
+                case "3":
+
+                    mode = new NToMGameMode(Math.Min(playfield.FirstPlayerArmy.Count(), playfield.SecondPlayerArmy.Count()));
+                    break;
+            }
+
             playfield.SetGameMode(mode);
         }
 

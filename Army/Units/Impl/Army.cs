@@ -1,4 +1,5 @@
 ﻿using ConsoleGame.Infrastructure;
+using NetCoreAudio;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,6 +8,8 @@ namespace ConsoleGame.Army.Units.Impl
 {
     class UserArmy : IArmy
     {
+
+        protected readonly object lockObj = new object();
         protected UnitFactory unitFactory { get; set; }
         private static Logger logger { get; set; }
 
@@ -17,7 +20,7 @@ namespace ConsoleGame.Army.Units.Impl
         public UserArmy(int money)
         {
             unitFactory = UnitFactory.GetInstance();
-            logger = new Logger();
+            logger = Logger.GetInstance();
             Money = money;
             Units = new List<IUnit>();
         }
@@ -25,7 +28,7 @@ namespace ConsoleGame.Army.Units.Impl
         public UserArmy(UserArmy army)
         {
             unitFactory = UnitFactory.GetInstance();
-            logger = new Logger();
+            logger = Logger.GetInstance();
             Name = army.Name;
             Money = army.Money;
 
@@ -129,6 +132,15 @@ namespace ConsoleGame.Army.Units.Impl
             }
 
             return info;
+        }
+
+        public void DeathNotifier()
+        {
+            //var player = new Player();
+            //player.Play(@"C:\Users\mylif\source\repos\Projects\ConsoleGame\beep.wav");
+
+            Console.Beep();
+
         }
     }
 }
