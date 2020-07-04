@@ -6,6 +6,7 @@ namespace ConsoleGame.Army.Units.Impl
 {
     class Archer : IUnit, ICloneable, ISpecialAction, IHealable
     {
+        public Defaults.UNITS UnitTypeId { get; set; }
         public int Cost { get; set; }
         public int Hp { get; set; }
         public int Ad { get; set; }
@@ -24,6 +25,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.SpecialActionStrength = specialActionStrength;
             this.Range = range;
             this.Name = Defaults.Archer.name;
+            this.UnitTypeId = Defaults.UNITS.ARCHER;
         }
 
         public Archer(Archer archer)
@@ -35,6 +37,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.SpecialActionStrength = archer.SpecialActionStrength;
             this.Range = archer.Range;
             this.Name = archer.Name;
+            this.UnitTypeId = Defaults.UNITS.ARCHER;
         }
         public object Clone()
         {
@@ -43,6 +46,10 @@ namespace ConsoleGame.Army.Units.Impl
 
         public IUnit DoSpecialAction(IUnit unit)
         {
+            if(unit is WanderingTownAdapter)
+            {
+                return unit;
+            }
 
             if (SpecialActionStrength > unit.Hp + unit.Df)
             {

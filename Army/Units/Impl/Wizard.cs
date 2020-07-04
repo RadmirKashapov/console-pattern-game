@@ -7,7 +7,7 @@ namespace ConsoleGame.Army.Units.Impl
     class Wizard : IUnit, ICloneable, ISpecialAction
     {
         public int Cost { get; set; }
-
+        public Defaults.UNITS UnitTypeId { get; set; }
         public int Hp { get; set; }
         public int Ad { get; set; }
         public int Df { get; set; }
@@ -24,6 +24,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.SpecialActionStrength = specialActionStrength;
             this.Range = range;
             this.Name = Defaults.Wizard.name;
+            this.UnitTypeId = Defaults.UNITS.WIZARD;
         }
         public Wizard(Wizard wizard)
         {
@@ -34,6 +35,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.SpecialActionStrength = wizard.SpecialActionStrength;
             this.Range = wizard.Range;
             this.Name = wizard.Name;
+            this.UnitTypeId = Defaults.UNITS.WIZARD;
         }
 
         public object Clone()
@@ -43,7 +45,7 @@ namespace ConsoleGame.Army.Units.Impl
 
         public IUnit DoSpecialAction(IUnit unit)
         {
-            if (unit is ICloneable && (unit is Archer || unit is Infantry))
+            if (unit is ICloneable && (unit is Archer || unit is Infantry || unit is WanderingTownAdapter))
             {
                 Random rnd = new Random();
                 int magic = rnd.Next(0, 3);

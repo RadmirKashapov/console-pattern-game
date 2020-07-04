@@ -8,7 +8,7 @@ namespace ConsoleGame.Army.Units.Impl
     class Infantry : IUnit, ICloneable, ISpecialAction, IHealable
     {
         public int Cost { get; set; }
-
+        public Defaults.UNITS UnitTypeId { get; set; }
         public int Hp { get; set; }
         public int Ad { get; set; }
         public int Df { get; set; }
@@ -25,6 +25,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.SpecialActionStrength = specialActionStrength;
             this.Range = range;
             this.Name = Defaults.Infantry.name;
+            this.UnitTypeId = Defaults.UNITS.INFANTRY;
         }
 
         public Infantry(Infantry infantry)
@@ -36,6 +37,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.SpecialActionStrength = infantry.SpecialActionStrength;
             this.Range = infantry.Range;
             this.Name = infantry.Name;
+            this.UnitTypeId = Defaults.UNITS.INFANTRY;
         }
         public object Clone()
         {
@@ -77,13 +79,13 @@ namespace ConsoleGame.Army.Units.Impl
 
             while (flag)
             {
-                if(unit.Accessories.Count == 4)
+                if(unit.Accessories.Count == Enum.GetNames(typeof(Defaults.FASHIONABLE_ACCESSORIES)).Length)
                 {
                     return null;
                 }
 
                 Random rnd = new Random();
-                magic = rnd.Next(0, 4);
+                magic = rnd.Next(0, Enum.GetNames(typeof(Defaults.FASHIONABLE_ACCESSORIES)).Length);
 
                 if (unit.Accessories.ContainsKey(magic))
                 {
@@ -94,18 +96,18 @@ namespace ConsoleGame.Army.Units.Impl
                 }
             }
 
-            switch (magic)
+            switch ((Defaults.FASHIONABLE_ACCESSORIES)magic)
             {
-                case 0:
+                case Defaults.FASHIONABLE_ACCESSORIES.ARMOR:
                     accessory = new ArmorComponent();
                     break;
-                case 1:
+                case Defaults.FASHIONABLE_ACCESSORIES.HELMET:
                     accessory = new HelmetComponent();
                     break;
-                case 2:
+                case Defaults.FASHIONABLE_ACCESSORIES.HORSE:
                     accessory = new HorseComponent();
                     break;
-                case 3:
+                case Defaults.FASHIONABLE_ACCESSORIES.PEAK:
                     accessory = new PeakComponent();
                     break;
             }

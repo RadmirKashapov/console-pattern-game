@@ -1,6 +1,7 @@
 ﻿using ConsoleGame.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -71,6 +72,8 @@ namespace ConsoleGame.Army.Units.Impl
 
             UnitFactory.Register((int)Defaults.UNITS.WIZARD, () =>
                new Wizard(Defaults.Wizard.price, Defaults.Wizard.health, Defaults.Wizard.attack, Defaults.Wizard.defence, Defaults.Wizard.specialActionStrength, Defaults.Wizard.range));
+
+            UnitFactory.Register((int)Defaults.UNITS.WANDERING_TOWN, () => new WanderingTownAdapter(new WanderingTown()));
         }
 
         private static void RegisterFlags(int id)

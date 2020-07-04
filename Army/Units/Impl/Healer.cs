@@ -7,6 +7,7 @@ namespace ConsoleGame.Army.Units.Impl
 {
     class Healer : IUnit, ICloneable, ISpecialAction, IHealable
     {
+        public Defaults.UNITS UnitTypeId { get; set; }
         public int Cost { get; set; }
         public int Hp { get; set; }
         public int Ad { get; set; }
@@ -24,6 +25,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.SpecialActionStrength = specialActionStrength;
             this.Range = range;
             this.Name = Defaults.Healer.name;
+            this.UnitTypeId = Defaults.UNITS.HEALER;
         }
         public Healer(Healer healer)
         {
@@ -34,6 +36,7 @@ namespace ConsoleGame.Army.Units.Impl
             this.SpecialActionStrength = healer.SpecialActionStrength;
             this.Range = healer.Range;
             this.Name = healer.Name;
+            this.UnitTypeId = Defaults.UNITS.HEALER;
         }
 
         public object Clone()

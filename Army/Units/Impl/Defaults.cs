@@ -4,13 +4,18 @@ using System.Text;
 
 namespace ConsoleGame.Army.Units.Impl
 {
-    static class Defaults
+    public static class Defaults
     {
-
         public enum UNITS
         {
-            INFANTRY, ARCHER, HEALER, KNIGHT, WIZARD
+            INFANTRY, ARCHER, HEALER, KNIGHT, WIZARD, WANDERING_TOWN
         }
+
+        public enum FASHIONABLE_ACCESSORIES
+        {
+            ARMOR, HELMET, HORSE, PEAK
+        }
+
         public static class Infantry
         {
             public static readonly int health = 100;
@@ -62,6 +67,19 @@ namespace ConsoleGame.Army.Units.Impl
             public static readonly string name = "Колдун";
             public static readonly int range = 1;
             public static readonly int specialActionStrength = 50;
+        }
+
+        public static class WanderingTown
+        {
+            public static readonly int health = 100;
+            public static readonly int price = 120;
+            public static readonly int attack = 0;
+            public static readonly int defence = 100;
+            public static readonly string name = "Гуляй-город";
+            public static readonly int range = 1;
+            public static readonly int specialActionStrength = 1;
+            public static readonly int damageByArcher = 10;
+            public static readonly int damageByKnightWithHorse = 10;
         }
     }
 }

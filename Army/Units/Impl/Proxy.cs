@@ -7,6 +7,7 @@ namespace ConsoleGame.Army.Units.Impl
 {
     class Proxy : IUnit
     {
+        public Defaults.UNITS UnitTypeId { get; set; }
         public int Cost { get; set; }
         public int Hp { get; set; }
         public int Ad { get; set; }
@@ -23,6 +24,7 @@ namespace ConsoleGame.Army.Units.Impl
             Df = unit.Df;
             Name = unit.Name;
             Unit = unit;
+            UnitTypeId = unit.UnitTypeId;
         }
 
         public object Clone()

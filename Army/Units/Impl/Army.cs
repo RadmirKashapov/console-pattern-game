@@ -56,7 +56,7 @@ namespace ConsoleGame.Army.Units.Impl
             Random rnd = new Random();
             while (Money > 0)
             {
-                int character = rnd.Next(0, 5);
+                int character = rnd.Next(0, Enum.GetNames(typeof(Defaults.UNITS)).Length);
 
                 var unit = unitFactory.CreateUnit(character, Money);
 

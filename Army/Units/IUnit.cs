@@ -7,31 +7,52 @@ namespace ConsoleGame.Army.Units
 {
     public interface IUnit : ICloneable
     {
+        Defaults.UNITS UnitTypeId { get; set; }
         int Cost { get; set; } // "стоимость" создания
         int Hp { get; set; } // оставшаяся жизнь
         int Ad { get; set; } // сила атаки
         int Df { get; set; } // уровень защиты
         string Name { get; set; }
 
-        virtual IUnit TakeDamage(IUnit unit)
+        IUnit TakeDamage(IUnit unit)
         {
-            if (Ad >= unit.Hp + unit.Df) return null;
+            int Attack = Ad;
 
-            if (unit.Df > Ad) 
+            switch (this.UnitTypeId)
             {
-                unit.Df -= Ad;
+                case Defaults.UNITS.ARCHER:
+                    if (unit is WanderingTownAdapter)
+                        Attack = Defaults.WanderingTown.damageByArcher; 
+                    break;
+
+                case Defaults.UNITS.KNIGHT:
+
+                    if (((IFashionable)this).Accessories != null && ((IFashionable)this).Accessories.ContainsKey((int)(Defaults.FASHIONABLE_ACCESSORIES.HORSE)))
+                        if (unit is WanderingTownAdapter)
+                        {
+                            Attack = Defaults.WanderingTown.damageByKnightWithHorse;
+                        }
+
+                    break;
+            }
+
+            if (Attack >= unit.Hp + unit.Df) return null;
+
+            if (unit.Df > Attack)
+            {
+                unit.Df -= Attack;
 
                 return unit;
             }
 
-            unit.Hp -= Ad - unit.Df;
+            unit.Hp -= Attack - unit.Df;
             unit.Df = 0;
 
             return unit;
 
         }
 
-        public virtual string GetInfo()
+        public string GetInfo()
         {
             var info = $"Юнит {Name}. Здоровье: {Hp}. Атака: {Ad}. Защита: {Df}\n";
             return info;
