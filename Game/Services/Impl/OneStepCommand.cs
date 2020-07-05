@@ -1,4 +1,5 @@
-﻿using ConsoleGame.Army.Units.Impl;
+﻿using ConsoleGame.Army.Units;
+using ConsoleGame.Army.Units.Impl;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,10 +9,10 @@ namespace ConsoleGame.Game.Services.Impl
     class OneStepCommand : ICommand
     {
         private Play Playfield { get; set; }
-        private UserArmy firstBefore { get; set; }
-        private UserArmy secondBefore { get; set; }
-        private UserArmy firstAfter { get; set; }
-        private UserArmy secondAfter { get; set; }
+        private IArmy firstBefore { get; set; }
+        private IArmy secondBefore { get; set; }
+        private IArmy firstAfter { get; set; }
+        private IArmy secondAfter { get; set; }
 
         private bool statusBefore { get; set; }
         private bool statusAfter { get; set; }

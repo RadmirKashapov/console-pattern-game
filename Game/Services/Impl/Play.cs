@@ -5,13 +5,17 @@ using NetCoreAudio;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ConsoleGame.Game.Services.Impl
 {
     class Play
     {
-        public UserArmy FirstPlayerArmy { get; set; }
-        public UserArmy SecondPlayerArmy { get; set; }
+        protected readonly object lockObj = new object();
+        private bool IsPlayerOn { get; set; } = false;
+        public IArmy FirstPlayerArmy { get; set; }
+        public IArmy SecondPlayerArmy { get; set; }
         private IMode GameMode { get; set; }
         public bool EndOfGame { get; set; }
         public string StepInfo { get; set; }
@@ -19,7 +23,7 @@ namespace ConsoleGame.Game.Services.Impl
 
         private Logger logger { get; set; }
 
-        public Play(UserArmy firstArmy, UserArmy secondArmy)
+        public Play(IArmy firstArmy, IArmy secondArmy)
         {
             FirstPlayerArmy = firstArmy;
             SecondPlayerArmy = secondArmy;
@@ -44,10 +48,13 @@ namespace ConsoleGame.Game.Services.Impl
                 Step();
                 GameInfo += StepInfo;
                 logger.Log(StepInfo);
-                Console.WriteLine(StepInfo);
+                lock (lockObj)
+                {
+                    Console.WriteLine(StepInfo);
+                }
             }
         }
-        private List<IUnit> GetFirstLine(UserArmy army)
+        private List<IUnit> GetFirstLine(IArmy army)
         {
             var firstLine = new List<IUnit>();
             var min = Math.Min(GameMode.rowSize, army.Count()); //независимо от вариации игры мы будем получать точное количество бойцов в ряду
@@ -56,7 +63,7 @@ namespace ConsoleGame.Game.Services.Impl
             return firstLine;
         }
 
-        public void Fight(UserArmy first, UserArmy second)
+        public void Fight(IArmy first, IArmy second)
         {
             if (GameOver()) return;
 
@@ -80,20 +87,32 @@ namespace ConsoleGame.Game.Services.Impl
 
                 if (dead == null)
                 {
+                    if (kicker is WanderingTownAdapter && defender is WanderingTownAdapter)
+                    {
+                        StepInfo += $"\n\tНИЧЕГО ТАК НЕ БОДРИТ, КАК С УТРА МЕТЕОРИТ\n";
+                    }
+
                     StepInfo += $"\n\t{second.Name}. {defender.Name} ПОГИБ :(\n";
 
-                    second.DeathNotifier();
+                    second.DeathNotifier("");
 
                     second.Remove(defender);
                 }
                 else
+                {
+                    if (kicker is WanderingTownAdapter && defender is WanderingTownAdapter)
+                    {
+                        StepInfo += $"\n\tНИЧЕГО ТАК НЕ БОДРИТ, КАК С УТРА МЕТЕОРИТ\n";
+                    }
+
                     StepInfo += $"\n\t{second.Name}. ИТОГ ПОСЛЕ АТАКИ {first.Name} => {defender.GetInfo()}\n";
+                }
 
             }
 
         }
 
-        private List<ISpecialAction> GetSpecialUnitsInRow(UserArmy army, int column)
+        private List<ISpecialAction> GetSpecialUnitsInRow(IArmy army, int column)
         {
             var specials = new List<ISpecialAction>();
             int i = army.Count() - column - 1;
@@ -110,7 +129,7 @@ namespace ConsoleGame.Game.Services.Impl
             return specials;
         }
 
-        private List<IUnit> GetTargets(UserArmy first, UserArmy second, ISpecialAction unit)
+        private List<IUnit> GetTargets(IArmy first, IArmy second, ISpecialAction unit)
         {
             return ((IUnit)unit).UnitTypeId switch
             {
@@ -123,7 +142,7 @@ namespace ConsoleGame.Game.Services.Impl
 
       
 
-        private void DoSpecialAction(UserArmy one, UserArmy other)
+        private void DoSpecialAction(IArmy one, IArmy other)
         {
             if (GameOver()) return;
 
@@ -160,19 +179,19 @@ namespace ConsoleGame.Game.Services.Impl
                         
                         StepInfo += $"\n\t{one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}СРАЖАЕТСЯ ПРОТИВ \nАрмии {other.Name}. {beforeSpecial.GetInfo()}";
 
-                        if (afterSpecial == specials[indexSpecial])
+                        if (afterSpecial == null)
                         {
                             StepInfo += $"\n\tАрмия {other.Name}. {victims[indexVictim].Name} ПОГИБ :(\n";
 
-                            other.DeathNotifier();
+                            other.DeathNotifier("");
 
-                            other.Remove(afterSpecial);
+                            other.Remove(victims[indexVictim]);
                         }
                         else
                         {
 
 
-                            if (afterSpecial is WanderingTownAdapter)
+                            if (afterSpecial is WanderingTownAdapter && afterSpecial.Df > 0)
                             {
                                 StepInfo += $"\tАрмия {other.Name}. ИТОГ ПОСЛЕ АТАКИ {one.Name} =>  АТАКА ОТРАЖЕНА\n\tЮнит {afterSpecial.GetInfo()} ЦЕЛ";
                             }
@@ -203,8 +222,8 @@ namespace ConsoleGame.Game.Services.Impl
 
                     case Defaults.UNITS.WIZARD:
 
-                        StepInfo += $"\n\tИндекс колдуна: {indexSpecial}";
-                        StepInfo += $"\n\tИндекс жертвы: {indexVictim}";
+                        //StepInfo += $"\n\tИндекс колдуна: {indexSpecial}";
+                        //StepInfo += $"\n\tИндекс жертвы: {indexVictim}";
                         if (afterSpecial != null)
                         {
                             StepInfo += $"\n\tАрмия {one.Name}. {((IUnit)specials[indexSpecial]).GetInfo()}MAGIC TIME!\nАрмия {one.Name}. {beforeSpecial.GetInfo()}";
@@ -272,8 +291,9 @@ namespace ConsoleGame.Game.Services.Impl
                 else
                     StepInfo += $"Победила армия {FirstPlayerArmy.Name}. \n";
 
-                var player = new Player();
-                player.Play(@"C:\Users\mylif\source\repos\Projects\ConsoleGame\win.wav");
+                var audioPlayer = AudioPlayerFacade.GetInstance();
+
+                audioPlayer.Play(@"C:\Users\mylif\source\repos\Projects\ConsoleGame\win.wav");
 
                 return true;
             }

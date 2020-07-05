@@ -36,6 +36,15 @@ namespace ConsoleGame.Army.Units
                     break;
             }
 
+            if(this is WanderingTownAdapter)
+            {
+                if (unit is WanderingTownAdapter)
+                {
+                    Random rnd = new Random();
+                    Attack = rnd.Next(1, Defaults.WanderingTown.health);
+                }
+            }
+
             if (Attack >= unit.Hp + unit.Df) return null;
 
             if (unit.Df > Attack)

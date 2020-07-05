@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ConsoleGame.Army.Units.Impl
 {
-    class UnitFactory : IUnitFactory
+    public class UnitFactory : IUnitFactory
     {
         private UnitFactory() { }
 

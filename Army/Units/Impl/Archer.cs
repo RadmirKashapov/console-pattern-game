@@ -46,29 +46,32 @@ namespace ConsoleGame.Army.Units.Impl
 
         public IUnit DoSpecialAction(IUnit unit)
         {
-            if(unit is WanderingTownAdapter)
+            if (unit is WanderingTownAdapter && unit.Df > 0)
             {
                 return unit;
             }
-
-            if (SpecialActionStrength > unit.Hp + unit.Df)
+            else
             {
-                return null;
-            }
 
-            if (unit.Df > SpecialActionStrength)
-            {
-                unit.Df -= SpecialActionStrength;
+                if (SpecialActionStrength > unit.Hp + unit.Df)
+                {
+                    return null;
+                }
 
-                if (unit.Df < 0)
-                    unit.Df = 0;
+                if (unit.Df > SpecialActionStrength)
+                {
+                    unit.Df -= SpecialActionStrength;
 
+                    if (unit.Df < 0)
+                        unit.Df = 0;
+
+                    return unit;
+                }
+
+                unit.Hp -= SpecialActionStrength - unit.Df;
+                unit.Df = 0;
                 return unit;
             }
-
-            unit.Hp -= SpecialActionStrength - unit.Df;
-            unit.Df = 0;
-            return unit;
         }
     }
 }

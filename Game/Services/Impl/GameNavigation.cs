@@ -11,11 +11,10 @@ namespace ConsoleGame.Game.Services.Impl
 {
     class GameNavigation
     {
-        UserArmy firstArmy { get; set; } = null;
-        UserArmy secondArmy { get; set; } = null;
+        IArmy firstArmy { get; set; } = null;
+        IArmy secondArmy { get; set; } = null;
         Logger logger = Logger.GetInstance();
         CommandManager commandManager;
-        IMode mode;
         Play play { get; set; } = null; 
         private void Menu()
         {
@@ -42,9 +41,8 @@ namespace ConsoleGame.Game.Services.Impl
             {
                 case "1":
                     commandManager = null;
-                    firstArmy = new UserArmy(1);
-                    secondArmy = new UserArmy(1);
-                    mode = null;
+                    firstArmy = new UserArmyProxy(new UserArmy(1));
+                    secondArmy = new UserArmyProxy(new UserArmy(1));
 
                     firstArmy.SetName("Армия джедаев");
 

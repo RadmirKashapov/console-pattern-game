@@ -9,7 +9,7 @@ namespace ConsoleGame.Game.Services
     interface IMode
     {
         public int rowSize { get; set; }
-        public List<IUnit> GetArcherTargets(UserArmy firstArmy, UserArmy secondArmy, ISpecialAction unit)
+        public List<IUnit> GetArcherTargets(IArmy firstArmy, IArmy secondArmy, ISpecialAction unit)
         {
             var targets = new List<IUnit>();
 
@@ -22,7 +22,7 @@ namespace ConsoleGame.Game.Services
             return targets;
         }
 
-        public List<IUnit> GetDoctorTargets(UserArmy firstArmy, ISpecialAction unit)
+        public List<IUnit> GetDoctorTargets(IArmy firstArmy, ISpecialAction unit)
         {
             var targets = new List<IUnit>();
             int index = firstArmy.IndexOf((IUnit)unit);
@@ -49,7 +49,7 @@ namespace ConsoleGame.Game.Services
             return targets;
         }
 
-        public List<IUnit> GetInfantryTargets(UserArmy firstArmy, ISpecialAction unit)
+        public List<IUnit> GetInfantryTargets(IArmy firstArmy, ISpecialAction unit)
         {
             var targets = new List<IUnit>();
             int index = firstArmy.IndexOf((IUnit)unit);
@@ -70,7 +70,7 @@ namespace ConsoleGame.Game.Services
             return targets;
         }
 
-        public List<IUnit> GetOtherTargets(UserArmy firstArmy, ISpecialAction unit)
+        public List<IUnit> GetOtherTargets(IArmy firstArmy, ISpecialAction unit)
         {
             var targets = new List<IUnit>();
             int index = firstArmy.IndexOf((IUnit)unit);
